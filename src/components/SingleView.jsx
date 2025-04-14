@@ -1,21 +1,12 @@
 import PropTypes from "prop-types";
 
-import PropTypes from 'prop-types';
 
 const SingleView = (props) => {
-<<<<<<< HEAD
-const {item, setSelectedItem} = props;
-
-const handleClick = () => {
-  setSelectedItem(null);
-};
-=======
   const {item, setSelectedItem} = props;
 
   const handleClick = () => {
     setSelectedItem(null);
   };
->>>>>>> hooks
   return (
     // TODO: Add JSX for displaying a mediafile here
     // - use e.g. a <dialog> element for creating a modal
@@ -44,8 +35,4 @@ SingleView.propTypes = {
   setSelectedItem: PropTypes.func.isRequired,
 };
 
-<<<<<<< HEAD
-export default SingleView
-=======
 export default SingleView;
->>>>>>> hooks

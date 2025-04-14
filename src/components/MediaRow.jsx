@@ -1,19 +1,12 @@
 import {Link} from 'react-router';
 import PropTypes from 'prop-types';
-import {Link} from 'react-router';
 
 const MediaRow = (props) => {
   const {item, setSelectedItem} = props;
 
-<<<<<<< HEAD
-  const handleClick = () => {
-    setSelectedItem(item);
-  };
-=======
   /*const handleClick = () => {
     setSelectedItem(item);
   };*/
->>>>>>> hooks
 
   return (
     <tr>

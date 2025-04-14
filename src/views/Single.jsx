@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-import PropTypes from 'prop-types';
-=======
->>>>>>> hooks
 import {useLocation, useNavigate} from 'react-router';
 
 const Single = () => {
