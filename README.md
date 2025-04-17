@@ -1,5 +1,9 @@
 # Routing
 
+Open [this link](https://users.metropolia.fi/~gerlih/custom_hooks/) to view custom-hooks on browser.
+
+Open [this link](https://users.metropolia.fi/~gerlih/forms_dist/) to view forms on browser.
+
 Open [this link](https://users.metropolia.fi/~gerlih/context_dist/) to view context on browser.
 
 # React + Vite
