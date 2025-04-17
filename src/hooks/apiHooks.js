@@ -1,100 +1,89 @@
-import {useCallback, useEffect, useState} from 'react';
+import {useFile, useMedia} from '../hooks/apiHooks';
 
-import {fetchData} from '../utils/fetchData';
-import {uniqBy} from 'lodash';
+import useForm from '../hooks/formHooks';
+import {useNavigate} from 'react-router';
+import {useState} from 'react';
 
-const authApiUrl = import.meta.env.VITE_AUTH_API;
-const mediaApiUrl = import.meta.env.VITE_MEDIA_API;
+const Upload = () => {
+  const [file, setFile] = useState(null);
+  const {postFile} = useFile();
+  const {postMedia} = useMedia();
+  const navigate = useNavigate();
 
-const useMedia = () => {
-  const [mediaArray, setMediaArray] = useState([]);
-
-  const getMedia = async () => {
+  const doUpload = async () => {
     try {
-      const mediaData = await fetchData(`${mediaApiUrl}/media`);
-      const uniqueUserIds = uniqBy(mediaData, 'user_id');
+      // implement upload
+      const token = window.localStorage.getItem('token');
 
-      const userData = await Promise.all(
-        uniqueUserIds.map((item) =>
-          fetchData(`${authApiUrl}/users/${item.user_id}`),
-        ),
-      );
+      const fileResult = await postFile(file, token);
+      console.log('fileResult', fileResult);
 
-      // duplikaattien poisto on tehtävänannon ulkopuolella, ei tarvitse toteuttaa
-      const userMap = userData.reduce((map, {user_id, username}) => {
-        map[user_id] = username;
-        return map;
-      }, {});
+      const mediaResult = await postMedia(fileResult.data, inputs, token);
+      console.log('mediaResult', mediaResult);
 
-      const newData = mediaData.map((item) => ({
-        ...item,
-        username: userMap[item.user_id],
-      }));
-
-      setMediaArray(newData);
+      navigate('/');
     } catch (error) {
-      console.error('error', error);
+      console.log('error', error);
     }
   };
 
-  useEffect(() => {
-    getMedia();
-  }, []);
+  const {inputs, handleInputChange, handleSubmit} = useForm(doUpload);
 
-  return mediaArray;
-};
-
-const useAuthentication = () => {
-  const postLogin = async (inputs) => {
-    const fetchOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(inputs),
-    };
-    return await fetchData(
-      import.meta.env.VITE_AUTH_API + '/auth/login',
-      fetchOptions,
-    );
+  const handleFileChange = (evt) => {
+    if (evt.target.files) {
+      console.log(evt.target.files[0]);
+      // TODO: set the file to state
+      setFile(evt.target.files[0]);
+    }
   };
 
-  return {postLogin};
+  return (
+    <>
+      <h1>Upload</h1>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="title">Title</label>
+          <input
+            name="title"
+            type="text"
+            id="title"
+            onChange={handleInputChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="description">Description</label>
+          <textarea
+            name="description"
+            rows={5}
+            id="description"
+            onChange={handleInputChange}
+          ></textarea>
+        </div>
+        <div>
+          <label htmlFor="file">File</label>
+          <input
+            name="file"
+            type="file"
+            id="file"
+            accept="image/*, video/*"
+            onChange={handleFileChange}
+          />
+        </div>
+        <img
+          src={
+            file
+              ? URL.createObjectURL(file)
+              : 'https://placehold.co/600x400?text=Choose+image'
+          }
+          alt="preview"
+          width="200"
+        />
+        <button type="submit" disabled={!(file && inputs?.title.length > 3)}>
+          Upload
+        </button>
+      </form>
+    </>
+  );
 };
 
-const useUser = () => {
-  const postUser = async (inputs) => {
-    const fetchOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(inputs),
-    };
-    return await fetchData(
-      import.meta.env.VITE_AUTH_API + '/users',
-      fetchOptions,
-    );
-  };
-
-  const getUserByToken = useCallback(async (token) => {
-    const fetchOptions = {
-      headers: {
-        Authorization: 'Bearer: ' + token,
-      },
-    };
-
-    const userResult = await fetchData(
-      import.meta.env.VITE_AUTH_API + '/users/token',
-      fetchOptions,
-    );
-
-    console.log('userResult', userResult);
-
-    return userResult;
-  }, []);
-
-  return {getUserByToken, postUser};
-};
-
-export {useMedia, useAuthentication, useUser};
+export default Upload;
